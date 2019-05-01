@@ -156,22 +156,3 @@ def pytest_configure(config):
                 continue
 
             setattr(pdb.Pdb, attr, new)
-
-
-def pytest_enter_pdb(config):
-    import _pytest.config
-    tw = _pytest.config.create_terminal_writer(config)
-    curframe = sys._getframe().f_back
-    (test, frame) = find_test_by_frame(curframe)
-    if test is None:
-        tw.sep(">", "Couldn't determine current test")
-        return
-
-    offset = offset_between_frames(find_settrace_frame(curframe), frame)
-    desc = ''
-    if offset is not None:
-        desc = ' (%s)' % offset_description(offset)
-
-    tw.sep(">", "Currently in {} ({}:{}) on line {}{}".format(
-        test.location[2], test.location[0], test.location[1] + 1,
-        frame.f_lineno, desc))
